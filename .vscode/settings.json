@@ -20,5 +20,8 @@
     "eslint.validate": [
         "javascript",
         "typescript",
-    ]
+    ],
+	"terminal.integrated.autoReplies": {
+		"Terminate batch job (Y/N)": null
+	}
 }
