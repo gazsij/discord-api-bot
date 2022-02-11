@@ -10,7 +10,7 @@ export class Server {
 	private static logEvent = debug('discord-api-bot:api:event');
 	private static logError = debug('discord-api-bot:api:error');
 
-	private static port = Config.Options.PORT;
+	private static port = Config.PORT;
 	private static app: FastifyInstance;
 
 	public static async Setup(): Promise<void> {
@@ -28,7 +28,7 @@ export class Server {
 		});
 
 		Server.app.setErrorHandler(async (error: FastifyError) => {
-			!Config.Options.IS_PROD && Server.logError(error);
+			!Config.IS_PROD && Server.logError(error);
 			return {
 				ok: false,
 				status: 500,

@@ -9,7 +9,7 @@ export default async (fastify: FastifyInstance): Promise<void> => {
 					properties: {
 						ok: { type: 'boolean' },
 						status: { type: 'number' },
-						data: { type: 'boolean' }
+						data: { type: 'string' }
 					}
 				}
 			}
