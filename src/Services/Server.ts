@@ -2,6 +2,7 @@ import path from 'path';
 import debug from 'debug';
 import fastify, { FastifyInstance, FastifyError } from 'fastify';
 import autoload from 'fastify-autoload';
+import rawBody from 'fastify-raw-body';
 
 import { Config } from '../Utilities/Config';
 
@@ -18,6 +19,9 @@ export class Server {
 		Server.logSystem('Starting server...');
 
 		Server.app = fastify({ logger: false });
+
+		Server.app.register(rawBody, { runFirst: true });
+
 		Server.app.register(autoload, {
 			dir: path.join(__dirname, '../Plugins')
 		});
@@ -31,7 +35,7 @@ export class Server {
 			!Config.IS_PROD && Server.logError(error);
 			return {
 				ok: false,
-				status: 500,
+				status: error.statusCode ?? 500,
 				data: error.message
 			};
 		});

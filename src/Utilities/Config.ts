@@ -12,4 +12,7 @@ export class Config {
 	// api
 	static readonly PORT = parseInt(process.env.PORT as string) ?? 3000;
 	static readonly SUBDOMAIN = process.env.SUBDOMAIN;
+
+	// discord
+	static readonly PUBLIC_KEY = process.env.PUBLIC_KEY;
 }
