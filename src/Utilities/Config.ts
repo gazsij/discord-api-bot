@@ -14,5 +14,8 @@ export class Config {
 	static readonly SUBDOMAIN = process.env.SUBDOMAIN;
 
 	// discord
-	static readonly PUBLIC_KEY = process.env.PUBLIC_KEY;
+	static readonly BOT_TOKEN = process.env.BOT_TOKEN as string;
+	static readonly PUBLIC_KEY = process.env.PUBLIC_KEY as string;
+	static readonly APPLICATION_ID = process.env.APPLICATION_ID as string;
+	static readonly MAX_TIMEOUT = parseInt(process.env.MAX_TIMEOUT as string) ?? 5000;
 }
