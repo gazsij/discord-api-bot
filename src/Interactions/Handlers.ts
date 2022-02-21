@@ -7,8 +7,13 @@ import {
 	APIApplicationCommandAutocompleteResponse,
 	APIChatInputApplicationCommandInteraction,
 	APIContextMenuInteraction,
+	APIInteraction,
+	APIInteractionResponse,
 	APIMessageComponentInteraction,
+	ApplicationCommandType,
+	ComponentType,
 	InteractionResponseType,
+	InteractionType,
 	MessageFlags
 } from 'discord-api-types/v9';
 
@@ -62,7 +67,44 @@ export class Handlers {
 		logSystem('Successfully reloaded application commands and context menus.');
 	}
 
-	static async ExecuteCommand(interaction: APIChatInputApplicationCommandInteraction): Promise<APIInteractionCommandResponse> {
+	static async HandleInteraction(interaction: APIInteraction): Promise<APIInteractionResponse> {
+		switch (interaction.type) {
+			case InteractionType.Ping:
+				return { type: InteractionResponseType.Pong };
+
+			case InteractionType.ApplicationCommand:
+				switch (interaction.data.type) {
+					case ApplicationCommandType.ChatInput:
+						return Handlers.ExecuteCommand(interaction as APIChatInputApplicationCommandInteraction);
+
+					case ApplicationCommandType.Message || ApplicationCommandType.User:
+						return Handlers.ExecuteContextMenu(interaction as APIContextMenuInteraction);
+
+					default:
+						throw 'Unknown Type';
+				}
+
+			case InteractionType.MessageComponent:
+				switch (interaction.data.component_type) {
+					case ComponentType.Button:
+						return Handlers.ExecuteButton(interaction);
+
+					case ComponentType.SelectMenu:
+						return Handlers.ExecuteSelectMenu(interaction);
+
+					default:
+						throw 'Unknown Type';
+				}
+
+			case InteractionType.ApplicationCommandAutocomplete:
+				return Handlers.ExecuteAutocomplete(interaction);
+
+			default:
+				throw 'Unknown Type';
+		}
+	}
+
+	private static async ExecuteCommand(interaction: APIChatInputApplicationCommandInteraction): Promise<APIInteractionCommandResponse> {
 		try {
 			const commands = Handlers.handlers[HandlerType.Commands];
 			if (!commands)
@@ -86,7 +128,7 @@ export class Handlers {
 		}
 	}
 
-	static async ExecuteContextMenu(interaction: APIContextMenuInteraction): Promise<APIInteractionCommandResponse> {
+	private static async ExecuteContextMenu(interaction: APIContextMenuInteraction): Promise<APIInteractionCommandResponse> {
 		try {
 			const contextMenus = Handlers.handlers[HandlerType.ContextMenus];
 			if (!contextMenus)
@@ -110,7 +152,7 @@ export class Handlers {
 		}
 	}
 
-	static async ExecuteButton(interaction: APIMessageComponentInteraction): Promise<APIInteractionCommandResponse> {
+	private static async ExecuteButton(interaction: APIMessageComponentInteraction): Promise<APIInteractionCommandResponse> {
 		try {
 			const buttons = Handlers.handlers[HandlerType.Buttons];
 			if (!buttons)
@@ -134,7 +176,7 @@ export class Handlers {
 		}
 	}
 
-	static async ExecuteSelectMenu(interaction: APIMessageComponentInteraction): Promise<APIInteractionCommandResponse> {
+	private static async ExecuteSelectMenu(interaction: APIMessageComponentInteraction): Promise<APIInteractionCommandResponse> {
 		try {
 			const selectMenus = Handlers.handlers[HandlerType.SelectMenus];
 			if (!selectMenus)
@@ -158,7 +200,7 @@ export class Handlers {
 		}
 	}
 
-	static async ExecuteAutocomplete(interaction: APIApplicationCommandAutocompleteInteraction): Promise<APIApplicationCommandAutocompleteResponse> {
+	private static async ExecuteAutocomplete(interaction: APIApplicationCommandAutocompleteInteraction): Promise<APIApplicationCommandAutocompleteResponse> {
 		try {
 			const autocompletes = Handlers.handlers[HandlerType.Autocompletes];
 			if (!autocompletes)
